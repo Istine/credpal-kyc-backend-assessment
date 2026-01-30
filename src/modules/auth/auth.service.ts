@@ -18,7 +18,7 @@ if (!JWT_SECRET) throw new Error("JWT_SECRET is not set");
 const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN as any) || "1h";
 
 export function signToken(payload: JwtPayload) {
-  return jwt.sign(payload, "hghhg", { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
 export async function registerUser(input: {
