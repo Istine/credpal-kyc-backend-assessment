@@ -1,0 +1,24 @@
+# services:
+#   mongo:
+#     image: mongo:7.0-jammy
+#     ports:
+#       - "27017:27017"
+#     command: >
+#       mongod
+#       --wiredTigerCacheSizeGB 0.25
+#       --setParameter diagnosticDataCollectionEnabled=false
+
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:7.0-jammy
+    container_name: mongo-rs
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
