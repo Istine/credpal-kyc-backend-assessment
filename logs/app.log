@@ -132,3 +132,4 @@
 {"level":"info","message":"\nReceived SIGINT. Shutting down gracefully...","timestamp":"2026-01-30 00:52:25"}
 {"level":"info","message":"\nReceived SIGINT. Shutting down gracefully...","timestamp":"2026-01-30 00:52:25"}
 {"level":"error","message":"Forced shutdown after 10s.","timestamp":"2026-01-30 00:52:32"}
+{"code":"ECONNREFUSED","hostname":"_mongodb._tcp.cluster0.xgh23ds.mongodb.net","level":"error","message":"Failed to bootstrap the server: querySrv ECONNREFUSED _mongodb._tcp.cluster0.xgh23ds.mongodb.net","stack":"Error: querySrv ECONNREFUSED _mongodb._tcp.cluster0.xgh23ds.mongodb.net\n    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:294:17)","syscall":"querySrv","timestamp":"2026-01-30 16:06:44"}

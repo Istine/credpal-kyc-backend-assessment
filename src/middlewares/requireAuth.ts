@@ -2,9 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { UnauthorizedError } from "../utils/apiError";
 import { UserRole } from "../models/user.model";
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
-if (!JWT_SECRET) throw new Error("JWT_SECRET is not set");
+import logger from "../config/logger";
 
 type Decoded = {
   userId: string;
@@ -15,6 +13,8 @@ type Decoded = {
 
 export function requireAuth(req: Request, _res: Response, next: NextFunction) {
   try {
+    const JWT_SECRET = process.env.JWT_SECRET as string;
+    if (!JWT_SECRET) throw new Error("JWT_SECRET is not set");
     const header = req.header("authorization");
     if (!header?.startsWith("Bearer ")) {
       throw new UnauthorizedError("Missing or invalid Authorization header");
@@ -26,6 +26,7 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
     req.user = { id: decoded.userId, role: decoded.role };
     next();
   } catch (e: any) {
+    logger.error(e);
     const err = new UnauthorizedError("Unauthorized");
     next(err);
   }

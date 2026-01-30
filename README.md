@@ -179,3 +179,44 @@ Steps:
 The application can be containerized and deployed.
 
 MongoDB Atlas is used for the production database.
+
+## API Testing (Postman)
+
+This repository includes a Postman collection and environment for testing the API end-to-end.
+
+### Files
+
+- `credpal-kyc.postman_collection.json`
+- `credpal-kyc.postman_environment.json`
+
+### How to run
+
+1. Open Postman
+2. Import the collection file: **Import → File → `credpal-kyc.postman_collection.json`**
+3. Import the environment file: **Import → File → `credpal-kyc.postman_environment.json`**
+4. Select the environment in the top-right dropdown in Postman
+5. Set `baseUrl` in the environment to the deployed URL (https://credpal-kyc-backend-assessment.onrender.com/) (or `http://localhost:5000`)
+
+### Test with /Health
+
+- You can test to see that the service is up with /health
+
+### Token handling
+
+- The collection saves the JWT automatically after **Register** or **Login**.
+- `userToken` is used for user KYC routes.
+- `adminToken` is used for admin routes.
+
+### Suggested request order
+
+1. **Auth → Register User** (or **Login User**)
+2. **User KYC → Upsert KYC Draft** (creates/updates draft and stores `kycId`)
+3. **User KYC → Submit KYC**
+4. **Admin KYC → Login Admin**
+5. **Admin KYC → List Submitted KYCs**
+6. **Admin KYC → Review KYC (Approve)**
+
+### Notes
+
+- `Delete KYC` only works when status is `DRAFT` or `REJECTED`.
+- If using a free Render deployment, the service may sleep and the first request can take longer to respond.

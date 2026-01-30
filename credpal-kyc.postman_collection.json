@@ -1,0 +1,204 @@
+{
+  "info": {
+    "_postman_id": "b9b3f7a0-7f3e-4c2a-9b3a-kyc-api",
+    "name": "KYC Verification API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Backend assessment API – Auth, KYC, Admin Review"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://your-app.onrender.com" },
+    { "key": "userToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "kycId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) pm.collectionVariables.set('userToken', res.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) pm.collectionVariables.set('userToken', res.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User KYC",
+      "item": [
+        {
+          "name": "Upsert KYC Draft",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{userToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/kyc/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["kyc", "me"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fields\": {\n    \"fullName\": \"John Doe\",\n    \"dob\": \"1998-01-01\",\n    \"addressLine1\": \"Lekki\",\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\",\n    \"country\": \"NG\"\n  },\n  \"documents\": [\n    { \"type\": \"ID_CARD\", \"url\": \"https://example.com/id.png\" }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.kyc && res.kyc._id) pm.collectionVariables.set('kycId', res.kyc._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit KYC",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{userToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/kyc/me/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["kyc", "me", "submit"]
+            }
+          }
+        },
+        {
+          "name": "Delete KYC",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{userToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/kyc/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["kyc", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin KYC",
+      "item": [
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) pm.collectionVariables.set('adminToken', res.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Submitted KYCs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/kyc?status=SUBMITTED",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "kyc"],
+              "query": [{ "key": "status", "value": "SUBMITTED" }]
+            }
+          }
+        },
+        {
+          "name": "Review KYC (Approve)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/kyc/{{kycId}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "kyc", "{{kycId}}", "review"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"decision\": \"APPROVED\" }"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
